@@ -1,0 +1,40 @@
+server:
+  port: 1000
+  error:
+    include-message: always
+    include-binding-errors: always
+
+spring:
+  application:
+    name: libraAPI
+  config:
+    import: optional:consul:/
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: 1111
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        health-check-path: /health
+    libraAPI:
+      discovery:
+        locator:
+          enabled: true
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: "*"

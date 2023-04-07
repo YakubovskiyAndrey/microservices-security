@@ -1,0 +1,31 @@
+server:
+  port: 1001
+  error:
+    include-message: always
+    include-binding-errors: always
+
+spring:
+  application:
+    name: reader
+  config:
+    import: optional:consul:/
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        health-check-path: /health
+    reader:
+      discovery:
+        locator:
+          enabled: true
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: "*"
