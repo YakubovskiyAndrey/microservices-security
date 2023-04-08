@@ -17,7 +17,7 @@ public class UserDto {
 
     private String password;
 
-    private String decPassword;
+    private String token;
 
     private String role;
 

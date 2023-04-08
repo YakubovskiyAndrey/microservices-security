@@ -23,10 +23,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
+import java.util.Collection;
+import java.util.Base64;
+import java.util.List;
+import java.util.ArrayList;
 
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
@@ -46,17 +47,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @PostConstruct
     @Transactional
     public void init() {
-       Optional<UserData> userDataOptional = userRepository.findByUsername("admin");
+        String username = "admin";
+        String password = "admin";
+       Optional<UserData> userDataOptional = userRepository.findByUsername(username);
        if (userDataOptional.isEmpty()) {
            userRepository.save(UserData.builder()
-                   .username("admin")
-                   .password(passwordEncoder.encode("admin"))
-                   .decPassword("admin")
+                   .username(username)
+                   .password(passwordEncoder.encode(password))
+                   .token(generateToken(username, password))
                    .role("ADMIN")
                    .enabled(true)
                    .build()
            );
        }
+    }
+
+    private String generateToken(String username, String password){
+        byte[] encodedBytes = Base64.getEncoder().encode((username+ ":" + password).getBytes());
+        return  "Basic " + new String(encodedBytes);
     }
 
     @Override
@@ -67,7 +75,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             userRepository.save(UserData.builder()
                     .username(saveDto.getUsername())
                     .password(passwordEncoder.encode(saveDto.getPassword()))
-                    .decPassword(saveDto.getPassword())
+                    .token(generateToken(saveDto.getUsername(), saveDto.getPassword()))
                     .role(saveDto.getRole())
                     .enabled(true)
                     .build());

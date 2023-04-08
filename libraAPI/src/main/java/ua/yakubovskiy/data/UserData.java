@@ -41,8 +41,8 @@ public class UserData {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "decPassword")
-    private String decPassword;
+    @Column(name = "token")
+    private String token;
 
     @Column(name = "role")
     private String role;

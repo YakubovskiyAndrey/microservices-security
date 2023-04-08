@@ -14,8 +14,6 @@ import ua.yakubovskiy.client.FeignUserClient;
 import ua.yakubovskiy.dto.UserDto;
 import ua.yakubovskiy.service.UserClientService;
 
-import java.util.Base64;
-
 @Controller
 @RequiredArgsConstructor
 public class UserClientController {
@@ -28,40 +26,27 @@ public class UserClientController {
 
     @GetMapping("/")
     public String showMenu(Model model) {
-
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         Object principal = authentication.getPrincipal();
         if (principal instanceof User user) {
-
             UserDto userDto = userService.getUserDto(user.getUsername());
-            byte[] encodedBytes = Base64.getEncoder().encode((userDto.getUsername()
-                    + ":" + userDto.getDecPassword()).getBytes());
-
-            String authHeader = "Basic " + new String(encodedBytes);
-            model.addAttribute("books", feignUserClient.getListOfBooks(authHeader, userDto.getId()));
+            model.addAttribute("books",
+                    feignUserClient.getListOfBooks(userDto.getToken(), userDto.getId()));
         }
         return "menu";
     }
 
     @GetMapping("/getBook/{bookId}")
     public String getBook(@PathVariable("bookId") int bookId, Model model) {
-
         SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         Object principal = authentication.getPrincipal();
         if (principal instanceof User user) {
-
             UserDto userDto = userService.getUserDto(user.getUsername());
-            byte[] encodedBytes = Base64.getEncoder().encode((userDto.getUsername()
-                    + ":" + userDto.getDecPassword()).getBytes());
-
-            String authHeader = "Basic " + new String(encodedBytes);
-
             model.addAttribute("books",
-                    feignUserClient.getBook(authHeader, userDto.getId(), bookId));
+                    feignUserClient.getBook(userDto.getToken(), userDto.getId(), bookId));
         }
         return "book-info";
     }
-
 }

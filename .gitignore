@@ -1,0 +1,3 @@
+# Project exclude paths
+/libraAPI/target/
+/reader/target/
